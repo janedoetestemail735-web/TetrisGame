@@ -43,6 +43,8 @@ interface TetrisState {
   nextPieces: Piece[];
   heldPiece: Piece | null;
   canHold: boolean;
+  rotationAxis: 'x' | 'y' | 'z';
+  lastDropTime: number;
   
   // Actions
   initializeGame: () => void;
@@ -51,7 +53,7 @@ interface TetrisState {
   resumeGame: () => void;
   restartGame: () => void;
   movePiece: (dx: number, dy: number, dz: number) => boolean;
-  rotatePiece: (axis: 'x' | 'y' | 'z') => boolean;
+  rotatePiece: () => boolean;
   dropPiece: () => void;
   hardDrop: () => void;
   holdPiece: () => void;
@@ -76,6 +78,8 @@ export const useTetris = create<TetrisState>()(
     nextPieces: [],
     heldPiece: null,
     canHold: true,
+    rotationAxis: 'x',
+    lastDropTime: 0,
 
     initializeGame: () => {
       console.log("Initializing Tetris game");
@@ -101,7 +105,9 @@ export const useTetris = create<TetrisState>()(
         currentPiece: null,
         nextPieces,
         heldPiece: null,
-        canHold: true
+        canHold: true,
+        rotationAxis: 'x',
+        lastDropTime: Date.now()
       });
 
       // Auto-start the game
@@ -120,7 +126,8 @@ export const useTetris = create<TetrisState>()(
       set({
         gameState: "playing",
         currentPiece: newPiece,
-        nextPieces: newNextPieces
+        nextPieces: newNextPieces,
+        lastDropTime: Date.now()
       });
     },
 
@@ -159,19 +166,24 @@ export const useTetris = create<TetrisState>()(
       return false;
     },
 
-    rotatePiece: (axis: 'x' | 'y' | 'z') => {
-      const { currentPiece, field, gameState } = get();
+    rotatePiece: () => {
+      const { currentPiece, field, gameState, rotationAxis } = get();
       if (gameState !== "playing" || !currentPiece) return false;
 
-      const rotatedShape = rotatePieceShape(currentPiece.shape, axis);
+      const rotatedShape = rotatePieceShape(currentPiece.shape, rotationAxis);
       const rotatedPiece = {
         ...currentPiece,
         shape: rotatedShape
       };
 
       if (!checkCollision(rotatedPiece, field)) {
-        set({ currentPiece: rotatedPiece });
-        console.log(`Rotated piece around ${axis} axis`);
+        // Cycle to next rotation axis
+        const nextAxis = rotationAxis === 'x' ? 'y' : rotationAxis === 'y' ? 'z' : 'x';
+        set({ 
+          currentPiece: rotatedPiece,
+          rotationAxis: nextAxis
+        });
+        console.log(`Rotated piece around ${rotationAxis} axis, next axis: ${nextAxis}`);
         return true;
       }
 
@@ -314,13 +326,20 @@ export const useTetris = create<TetrisState>()(
     },
 
     gameLoop: () => {
-      const { gameState, currentPiece, field } = get();
+      const { gameState, currentPiece, field, lastDropTime } = get();
       if (gameState !== "playing" || !currentPiece) return;
 
-      // Check if current piece should be placed
-      const testPiece = { ...currentPiece, y: currentPiece.y - 1 };
-      if (checkCollision(testPiece, field)) {
-        get().placePiece();
+      const now = Date.now();
+      const dropInterval = 500; // Faster drop speed (500ms instead of 1000ms)
+      
+      if (now - lastDropTime > dropInterval) {
+        // Try to move piece down
+        const moved = get().movePiece(0, -1, 0);
+        if (!moved) {
+          // Piece can't move down, place it
+          get().placePiece();
+        }
+        set({ lastDropTime: now });
       }
     }
   }))

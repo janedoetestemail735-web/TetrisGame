@@ -1,27 +1,13 @@
 import { useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useTetris } from "@/lib/stores/useTetris";
 import { useAudio } from "@/lib/stores/useAudio";
 
 export default function Tetromino() {
   const groupRef = useRef<THREE.Group>(null);
-  const { currentPiece, movePiece, rotatePiece, dropPiece, hardDrop, holdPiece, pauseGame, resumeGame, gameState, gameLoop } = useTetris();
+  const { currentPiece, movePiece, rotatePiece, dropPiece, hardDrop, holdPiece, pauseGame, resumeGame, gameState } = useTetris();
   const { playHit } = useAudio();
-  const lastDropTime = useRef(Date.now());
-  const dropInterval = useRef(1000); // 1 second initially
 
-  useFrame(() => {
-    const now = Date.now();
-    if (now - lastDropTime.current > dropInterval.current) {
-      const moved = movePiece(0, -1, 0);
-      if (!moved) {
-        playHit();
-      }
-      lastDropTime.current = now;
-    }
-    gameLoop();
-  });
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -36,26 +22,14 @@ export default function Tetromino() {
           movePiece(1, 0, 0);
           break;
         case 'ArrowUp':
-          movePiece(0, 0, -1);
-          break;
-        case 'ArrowDown':
-          movePiece(0, 0, 1);
-          break;
-        case 'KeyW':
           movePiece(0, 1, 0);
           break;
-        case 'KeyS':
+        case 'ArrowDown':
           dropPiece();
           break;
-        // Rotation controls
-        case 'KeyQ':
-          rotatePiece('x');
-          break;
-        case 'KeyE':
-          rotatePiece('y');
-          break;
-        case 'KeyR':
-          rotatePiece('z');
+        // Single rotation control
+        case 'KeyX':
+          rotatePiece();
           break;
         case 'Space':
           event.preventDefault();

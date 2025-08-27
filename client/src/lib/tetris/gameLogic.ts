@@ -6,7 +6,7 @@ const FIELD_HEIGHT = 20;
 const FIELD_DEPTH = 10;
 
 export function getRandomPiece(): Piece {
-  const types: TetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+  const types: TetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L', 'CUBE'];
   const randomType = types[Math.floor(Math.random() * types.length)];
   const shape = TETROMINO_SHAPES[randomType];
   

@@ -1,4 +1,4 @@
-export type TetrominoType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
+export type TetrominoType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L' | 'CUBE';
 
 export interface TetrominoShape {
   blocks: { x: number; y: number; z: number }[];
@@ -60,6 +60,11 @@ export const TETROMINO_SHAPES: Record<TetrominoType, TetrominoShape> = {
       { x: 0, y: 0, z: 0 },
       { x: 1, y: 0, z: 0 }
     ]
+  },
+  CUBE: {
+    blocks: [
+      { x: 0, y: 0, z: 0 }
+    ]
   }
 };
 
@@ -70,5 +75,6 @@ export const TETROMINO_COLORS: Record<TetrominoType, string> = {
   S: '#00f000', // Green
   Z: '#f00000', // Red
   J: '#0000f0', // Blue
-  L: '#f0a000'  // Orange
+  L: '#f0a000', // Orange
+  CUBE: '#ff00ff' // Magenta
 };

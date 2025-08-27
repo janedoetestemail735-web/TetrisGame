@@ -58,18 +58,15 @@ export default function GameHUD() {
             <div>
               <div className="text-yellow-400 font-semibold">Movement:</div>
               <div>← → Left/Right</div>
-              <div>↑ ↓ Forward/Back</div>
-              <div>W: Up | S: Soft Drop</div>
+              <div>↑ Up | ↓ Soft Drop</div>
             </div>
             <div>
               <div className="text-green-400 font-semibold">Rotation:</div>
-              <div>Q: X-axis</div>
-              <div>E: Y-axis</div>
-              <div>R: Z-axis</div>
+              <div>X: Rotate (cycles axes)</div>
             </div>
           </div>
           <div className="mt-2 text-center text-xs text-gray-300">
-            Space: Hard Drop | Mouse: Camera
+            Space: Hard Drop | C: Hold
           </div>
         </div>
       </div>

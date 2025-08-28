@@ -68,6 +68,9 @@ export default function GameHUD() {
           <div className="mt-2 text-center text-xs text-gray-300">
             Space: Hard Drop | C: Hold
           </div>
+          <div className="mt-2 text-center text-xs text-blue-300">
+            Mouse: Drag to rotate view | Scroll: Zoom
+          </div>
         </div>
       </div>
 
